@@ -16,7 +16,7 @@ from src.functions import (
     read_triggers
 )
 
-from SidebarEEG import update_sidebar_log
+from src.components.Sidebar import update_sidebar_log
 from src.constants.config_eeg import DEFAULT_TRIGGERS
 
 def PreprocessEEG(key="preprocess-eeg"):

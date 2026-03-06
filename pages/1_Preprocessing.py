@@ -1,16 +1,16 @@
 
 import streamlit as st
-from SidebarEEG import SidebarEEG
 from src.components import (
     LoadMffFolder, 
     PreprocessEEG,
     IndependentComponentAnalysisEEG,
+    Sidebar
 )
 
 st.set_page_config(page_title="Preprocessing", layout="wide", initial_sidebar_state="expanded")
 
 # Render Global Header & Sidebar
-SidebarEEG()
+Sidebar()
 
 st.title("🧠 Preprocessing")
 st.markdown("Preprocess EEG signals from EGI .mff folders or preprocessed .fif files.")

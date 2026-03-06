@@ -1,6 +1,6 @@
 import streamlit as st
 import warnings
-from SidebarEEG import SidebarEEG
+from src.components.Sidebar import Sidebar
 
 # Suppress matplotlib/nilearn backend warnings
 warnings.filterwarnings("ignore", message="You are using the 'agg' matplotlib backend")
@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore", module="nilearn")
 st.set_page_config(page_title="APP EEG", layout="wide", initial_sidebar_state="expanded")
 
 # Render Global Header & Sidebar
-SidebarEEG()
+Sidebar()
 
 st.title("APP EEG")
 

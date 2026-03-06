@@ -48,7 +48,7 @@ def update_sidebar_log():
             else:
                 st.info("Run preprocessing steps to view the log summary here.")
 
-def SidebarEEG():
+def Sidebar():
     """
     Renders the sidebar documentation and processing logs for EEG pages.
     Should be called at the beginning of the EEG Preprocessing page.
