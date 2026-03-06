@@ -3,13 +3,6 @@
 ## OVERVIEW
 This is a **Streamlit** web application 
 
-## RUNNING AN APP 
-```sh
-streamlit run Home.py 
-```
-
-## CREATE AN .EXE APP
-
 # 1. Create the environment
 ```sh
 python -m venv venv_app_eeg --clear
@@ -29,7 +22,12 @@ python -m venv venv_app_eeg --clear
 .\venv_app_eeg\Scripts\pip install -r requirements.txt
 ```
 
-# 4. Run the command to generate the build folder
+# 4. Run the app in local 
+```sh
+streamlit run Home.py 
+```
+
+# 5. Generate an .exe app
 ```sh
 python -m PyInstaller --clean --noconfirm --onefile --name app_eeg `
 --copy-metadata streamlit `
@@ -49,7 +47,7 @@ python -m PyInstaller --clean --noconfirm --onefile --name app_eeg `
 run_app.py
 ```
 
-# 4. Copy source code in the build folder
+# 6. Copy source code in the build folder
 The executable file (`app_eeg.exe`) will be available in the `dist/` folder.
 You need to copy theses files in the `dist/` folder to make the executable works :
 - the folder `pages/` 
