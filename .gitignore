@@ -1,0 +1,6 @@
+*.pyc 
+node_modules/
+build/
+dist/
+venv_app_eeg/
+tempory_files/
