@@ -2,6 +2,10 @@
 # EEG Configuration
 
 # Mapping of channel types
+MAPPING_TYPE = {'DI75': 'misc', 'DI77': 'misc', 'DI79': 'misc',
+  'DI65': 'misc', 'DI67': 'misc', 'DI69': 'misc', 'DI66': 'misc', 'DI68': 'misc',
+  'DI70': 'misc', 'STI 014': 'stim', 'ECG': 'ecg', 'EMG': 'emg'}
+
 MAPPING_TYPE_CHE = {'D255': 'misc', 'DIN4': 'misc', 'DI75': 'misc', 'DI77': 'misc', 'DI79': 'misc',
   'DI65': 'misc', 'DI67': 'misc', 'DI69': 'misc', 'DI66': 'misc', 'DI68': 'misc',
   'DI70': 'misc', 'STI 014': 'stim', 'ECG': 'ecg', 'EMG': 'emg'}
@@ -10,11 +14,14 @@ MAPPING_TYPE_TAI = {
   'DI65': 'misc', 'DI67': 'misc', 'DI69': 'misc', 'DI66': 'misc', 'DI68': 'misc',
   'DI70': 'misc', 'STI 014': 'stim', 'ECG': 'ecg', 'EMG': 'emg'}
 
-MAPPING_TYPE = {'DI75': 'misc', 'DI77': 'misc', 'DI79': 'misc',
-  'DI65': 'misc', 'DI67': 'misc', 'DI69': 'misc', 'DI66': 'misc', 'DI68': 'misc',
-  'DI70': 'misc', 'STI 014': 'stim', 'ECG': 'ecg', 'EMG': 'emg'}
 
 DEFAULT_TRIGGERS = ['DI65', 'DI66', 'DI67', 'DI68', 'DI69', 'DI70', 'STI 014']
+
+# Preprocessing defaults
+DEFAULT_CHAN_PSD_PLOT = ['E15','E11', 'E55', 'E62','E75', 'E108', 'E45', 'E122', 'E33']
+DEFAULT_CHAN_MISC = ['E125','E126','E127','E128', 'E119', 'E48']
+DEFAULT_BADS = ['VREF']
+SFREQ = 200
 
 # Channel names for montage (EGI 128)
 EEG_CHAN_NAMES = ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'E10',

@@ -8,8 +8,12 @@ import pandas as pd
 
 from src.functions import (
     fit_ica,
-    find_blinks
+    find_blinks,
+    st_display_logs
 )
+
+from src.constants.config_eeg import ICA_RANDOM_STATE
+
 
 def IndependentComponentAnalysisEEG(key="ica-eeg"):
     """
@@ -20,7 +24,7 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
 
     input_path = st.text_input(
         "Input FIF File Path",
-        placeholder="Enter path to .fif file (e.g., subject_raw.fif)",
+        placeholder="Enter path to .fif file (e.g., subject_processed.fif)",
         help="Path to the raw converted .fif file",
         key=f"{key}-input"
     )
@@ -88,13 +92,11 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
         do_apply_ica = st.checkbox("Apply ICA", value=True, key=f"{key}-do-apply")
     with col_e3:
         with st.expander("ICA Parameters", expanded=do_apply_ica):
-            col_i1, col_i2, col_i3 = st.columns(3)
+            col_i1, col_i2 = st.columns(2)
             with col_i1:
                 param_n_components = st.number_input("N Components", value=10, min_value=1, step=1, key=f"{key}-ncomp")
             with col_i2:
                 param_method = st.selectbox("Method", ["fastica", "infomax", "picard"], index=0, key=f"{key}-method")
-            with col_i3:
-                param_random_state = st.number_input("Random State", value=23, key=f"{key}-seed")
 
     st.markdown("---")
 
@@ -110,9 +112,21 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
                 st.error(f"Could not create output directory: {e}")
                 return
 
-        subject_name = os.path.splitext(os.path.basename(input_path))[0].replace('_filter', '') 
+        subject_name = os.path.splitext(os.path.basename(input_path))[0].replace('preprocessed', '') 
         
-        st.info(f"Processing: {os.path.basename(input_path)}")
+        # --- Initialize log_data and placeholder ---
+        log_placeholder = st.sidebar.empty()
+        log_data = {
+            'subject_name': subject_name,
+            'process_type': 'ica',
+            'config': {
+                'do_find_blinks': do_find_blinks,
+                'do_find_eog': do_find_eog,
+                'do_apply_ica': do_apply_ica
+            }
+        }
+        
+        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
         
         orig_backend = plt.get_backend()
 
@@ -126,21 +140,25 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
                     ch = param_eog_ch if do_find_eog else "E25" # Fallback if EOG is unchecked
                     try:
                         eog_events = find_blinks(raw, ch)
-                        st.success(f"Blinks detected: {len(eog_events)}")
+                        log_data['do_find_blinks'] = True
+                        log_data['blinks_count'] = len(eog_events)
+                        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
                     except Exception as e:
                         st.warning(f"Could not find blinks on {ch}: {e}")
 
             if do_find_eog or do_apply_ica:
                 with st.spinner(f"Fitting ICA ({param_n_components} components)..."):
-                    ica = fit_ica(raw, n_components=param_n_components, method=param_method, random_state=int(param_random_state))
+                    ica = fit_ica(raw, n_components=param_n_components, method=param_method, random_state=ICA_RANDOM_STATE)
 
                 # --- 2. Find Bad EOG ---
                 if do_find_eog:
-                    st.info("Searching for EOG-related components...")
                     try:
                         eog_inds, scores = ica.find_bads_eog(raw, ch_name=param_eog_ch, threshold=3.0)
-                        st.success(f"Suggested EOG Components: {eog_inds}")
                         ica.exclude = eog_inds
+                        log_data['do_find_eog'] = True
+                        log_data['param_eog_ch'] = param_eog_ch
+                        log_data['eog_excludes'] = eog_inds
+                        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
                     except Exception as e:
                         st.warning(f"Could not find bad EOG components: {e}")
 
@@ -151,7 +169,6 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
                         try: plt.switch_backend('Qt5Agg')
                         except: plt.switch_backend('TkAgg')
 
-                        st.info("Opening Components Plot (Close window to continue to Sources)...")
                         ica.plot_components(show=False, title="ICA Components")
                         plt.show(block=True) # Important: plot_sources is blocking next
                 
@@ -168,10 +185,7 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
                         try: plt.switch_backend('Qt5Agg')
                         except: plt.switch_backend('TkAgg')
 
-                        st.info("Opening Sources Plot (Click to reject, close window to apply)...")
                         ica.plot_sources(raw, block=True, title="ICA Sources (Click to reject, close to finish)")
-                        
-                        st.success(f"ICA Selection Closed. Components to exclude: {ica.exclude}")
                         
                     except Exception as e:
                         st.error(f"Native Plot Error: {e}")
@@ -181,6 +195,11 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
 
                     with st.spinner("Applying ICA to data..."):
                         ica.apply(raw)
+                        log_data['do_apply_ica'] = True
+                        log_data['param_n_components'] = param_n_components
+                        log_data['param_method'] = param_method
+                        log_data['ica_excludes'] = ica.exclude
+                        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
 
             # --- Save ---
             if do_apply_ica:
@@ -192,6 +211,9 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
                     raw.save(save_path, overwrite=True)
                 
                 st.success(f"✅ ICA Complete. Saved to `{save_path}`")
+                
+                # Finalize log
+                st_display_logs(log_data, log_placeholder, key=f"{key}-logs", is_final=True)
             else:
                 st.info("ICA was not applied. No new file saved.")
                 

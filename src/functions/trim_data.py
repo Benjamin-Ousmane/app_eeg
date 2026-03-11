@@ -1,14 +1,13 @@
 import mne
 import numpy as np
 
-def trim_eeg_data(raw, start_time, end_time, duration_after_last, verbose=True):
+def trim_eeg_data(raw, start_time, end_time, verbose=True):
     """
-    Trim EEG data to start at `start_time` and end `duration_after_last` seconds 
-    after `end_time`. `start_time` and `end_time` should be in seconds.
+    Trim EEG data to start at `start_time` and end at `end_time` seconds.
     """
     
     tmin = max(0, start_time)
-    tmax = end_time + duration_after_last
+    tmax = end_time
     
     # Ensure tmax doesn't exceed the actual raw duration
     max_time = raw.times[-1]

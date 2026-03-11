@@ -43,7 +43,10 @@ python -m PyInstaller --clean --noconfirm --onefile --name app_eeg `
 --hidden-import pyarrow `
 --hidden-import openpyxl --hidden-import openpyxl.cell `
 --hidden-import mne `
---add-data "Home.py;." --add-data "SidebarEEG.py;." --add-data "pages;pages" --add-data "src;src" `
+--hidden-import matplotlib.backends.backend_tkagg `
+--hidden-import matplotlib.backends.backend_qt5agg `
+--hidden-import tkinter `
+--add-data "Home.py;." --add-data "pages;pages" --add-data "src;src" `
 run_app.py
 ```
 

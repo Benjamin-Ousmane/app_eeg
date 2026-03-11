@@ -3,6 +3,7 @@ import streamlit as st
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+import mne
 import pandas as pd
 
 from src.functions import load_mff
@@ -85,11 +86,12 @@ def LoadMffFolder(key="load-mff"):
                         pass
 
                 # 1. 3D Sensors (Blocking)
-                fig_3d = raw.plot_sensors(kind='3d', ch_type='eeg', show=False)
+                fig_3d = raw.plot_sensors(kind='3d')
                 plt.show(block=True)
 
                 # 2. Raw Signal Plot (Blocking)
-                raw.plot(show_options=True, block=True)
+                picks = mne.pick_types(raw.info, eeg=True, ecg=True, emg=True, stim=True, eog=True, exclude=[])
+                raw.plot(show_options=True, block=True, picks=picks)
 
             except Exception as e:
                 st.error(f"Failed to open native plots: {e}")

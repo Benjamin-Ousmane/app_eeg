@@ -8,4 +8,4 @@ def resample_data(data, sfreq=200, verbose=True):
     if verbose:
         print(f"Resampling data to {sfreq} Hz")
         
-    return data.resample(sfreq, npad="auto")
+    return data.resample(sfreq)

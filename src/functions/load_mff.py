@@ -9,7 +9,6 @@ def load_mff(raw_fname, subject_name, verbose=True):
     """
     # Load data
     try:
-        # data = mne.io.read_raw_egi(raw_fname, preload=True, verbose=verbose)
         data = mne.io.read_raw_egi(raw_fname, eog=None, misc=None, exclude=None, include=None, preload=True, verbose=None)
     except Exception as e:
         print(f"Failed to load {raw_fname}: {e}")
@@ -20,17 +19,16 @@ def load_mff(raw_fname, subject_name, verbose=True):
         print(f'Event ID : {data.event_id}')
         print(f'Chan in the file : {data.ch_names}')
 
-    # Determine mapping based on subject name
-    if subject_name.startswith('CHE'):
-        mapping_raw = cfg.MAPPING_TYPE_CHE
-    elif subject_name.startswith('TAI'):
-        mapping_raw = cfg.MAPPING_TYPE_TAI
-    else:
-        mapping_raw = cfg.MAPPING_TYPE
+    # Mapping
+    mapping_raw = cfg.MAPPING_TYPE
+
+    print('mapping_raw: ', mapping_raw)
 
     # Filter mapping for present channels
     present_chans = set(data.ch_names)
+    print('present_chans: ', present_chans)
     mapping_filtre = {ch: typ for ch, typ in mapping_raw.items() if ch in present_chans}
+    print('mapping_filtre: ', mapping_filtre)
 
     # Warn about missing channels
     if len(mapping_filtre) < len(mapping_raw):
@@ -40,28 +38,25 @@ def load_mff(raw_fname, subject_name, verbose=True):
 
     # Set channel types
     data.set_channel_types(mapping_filtre)
+    
 
     # Load and set montage
     coordinates_file = os.path.join(raw_fname, 'coordinates.xml')
     if os.path.exists(coordinates_file):
         try:
             montage = mne.channels.read_dig_egi(coordinates_file)
-            
-            # Check length match before assigning
-            if len(montage.ch_names) == len(cfg.EEG_CHAN_NAMES):
-                 montage.ch_names = cfg.EEG_CHAN_NAMES
-            else:
-                print(f"Montage channel count ({len(montage.ch_names)}) does not match expected ({len(cfg.EEG_CHAN_NAMES)}). Skipping rename.")
-
+            # Force assigning configuration names because montage format does not always match raw names
+            montage.ch_names = cfg.EEG_CHAN_NAMES
             data.set_montage(montage, match_case=False, on_missing='warn')
-            
             data.info['subject_info'] = {'his_id' : subject_name}
+            
             if verbose:
-                print('Raw data info ch_names: ,%s', data.info['ch_names'])
-                print('Raw data info channels: ,%s', len(data.info['ch_names']))
-                print('Raw data info highpass: ,%s', data.info['highpass'])
-                print('Raw data info lowpass: ,%s', data.info['lowpass'])
-                print('Raw data info sfreq: ,%s', data.info['sfreq'])
+                print('Raw data info ch_names: ', data.info['ch_names'])
+                print('chan type : ', data.get_channel_types())
+                print('Raw data info channels: ', len(data.info['ch_names']))
+                print('Raw data info highpass: ', data.info['highpass'])
+                print('Raw data info lowpass: ', data.info['lowpass'])
+                print('Raw data info sfreq: ', data.info['sfreq'])
 
 
         except Exception as e:

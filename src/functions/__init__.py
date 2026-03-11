@@ -9,6 +9,7 @@ from .find_blinks import find_blinks
 from .epoch_data import epoch_data
 from .trim_data import trim_eeg_data
 from .read_triggers import read_triggers
+from .st_display_logs import st_display_logs
 
 __all__ = [
     "load_mff",
@@ -22,5 +23,6 @@ __all__ = [
     "find_blinks",
     "epoch_data",
     "trim_eeg_data",
-    "read_triggers"
+    "read_triggers",
+    "st_display_logs"
 ]

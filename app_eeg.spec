@@ -3,8 +3,8 @@ from PyInstaller.utils.hooks import collect_data_files
 from PyInstaller.utils.hooks import collect_submodules
 from PyInstaller.utils.hooks import copy_metadata
 
-datas = [('Home.py', '.'), ('SidebarEEG.py', '.'), ('pages', 'pages'), ('src', 'src')]
-hiddenimports = ['pandas', 'pyarrow', 'openpyxl', 'openpyxl.cell', 'mne']
+datas = [('Home.py', '.'), ('pages', 'pages'), ('src', 'src')]
+hiddenimports = ['pandas', 'pyarrow', 'openpyxl', 'openpyxl.cell', 'mne', 'matplotlib.backends.backend_tkagg', 'matplotlib.backends.backend_qt5agg', 'tkinter']
 datas += collect_data_files('streamlit')
 datas += collect_data_files('pandas')
 datas += collect_data_files('pyarrow')
