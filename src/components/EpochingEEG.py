@@ -23,12 +23,21 @@ def EpochingEEG(key="epoch-eeg"):
         help="Path to the raw converted .fif file",
         key=f"{key}-input"
     )
+    if input_path.startswith('"') and input_path.endswith('"'):
+        input_path = input_path[1:-1]
+    elif input_path.startswith("'") and input_path.endswith("'"):
+        input_path = input_path[1:-1]
+
     output_dir = st.text_input(
         "Output Directory",
         placeholder="Enter output directory ...",
         help="Directory to save the preprocessed file",
         key=f"{key}-output"
     )
+    if output_dir.startswith('"') and output_dir.endswith('"'):
+        output_dir = output_dir[1:-1]
+    elif output_dir.startswith("'") and output_dir.endswith("'"):
+        output_dir = output_dir[1:-1]
 
     # --- Parameters ---
     col1, col2, col3 = st.columns(3)
