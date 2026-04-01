@@ -77,6 +77,11 @@ def LoadMffFolder(key="load-mff"):
     mapping_dict = default_mapping
     montage_ch_names = default_montage
     
+    do_montage = False
+    do_mapping = False
+    do_plot_sensors = False
+    do_plot_raw = False
+    
     if raw_preview:
         ch_names = raw_preview.ch_names
         
