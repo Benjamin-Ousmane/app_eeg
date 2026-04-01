@@ -12,7 +12,7 @@ from src.functions import (
     st_display_logs
 )
 
-from src.constants.config_eeg import ICA_RANDOM_STATE
+from src.constants import ICA_RANDOM_STATE
 
 
 def IndependentComponentAnalysisEEG(key="ica-eeg"):

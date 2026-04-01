@@ -38,12 +38,3 @@ EEG_CHAN_NAMES = ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'E10',
                 'E111', 'E112', 'E113', 'E114', 'E115', 'E116', 'E117', 'E118', 'E119', 'E120',
                 'E121', 'E122', 'E123', 'E124', 'E125', 'E126', 'E127', 'E128', 'VREF'] #'E129'
 
-# ICA defaults
-EEG_FOR_EOG = ['E25']
-BLINK_DETECT_TH = 0.00005
-MIN_BLINKS_ICA = 150
-EOG_THRESHOLD = 3
-N_COMPONENTS = 10
-ICA_METHOD = 'fastica'
-ICA_DECIM = 2
-ICA_RANDOM_STATE = 23

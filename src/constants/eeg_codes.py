@@ -7,11 +7,11 @@ EEG_CODES = {
     "F": "Interact noise"
 }
 
-SITU_MAP = {
-    65: 'Music',
-    66: 'Noise',
-    67: 'Rest after Music',
-    68: 'Rest after noise',
-    69: 'Interact music',
-    70: 'Interact noise'
+CHANNEL_CODES = {
+    "DI65": 'Music',
+    "DI66": 'Noise',
+    "DI67": 'Rest after Music',
+    "DI68": 'Rest after noise',
+    "DI69": 'Interact music',
+    "DI70": 'Interact noise'
 }
