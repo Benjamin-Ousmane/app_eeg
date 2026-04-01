@@ -17,7 +17,7 @@ from src.functions import (
     st_display_logs
 )
 
-from src.constants.config_eeg import (
+from src.constants.loading_constants import (
     DEFAULT_TRIGGERS,
     DEFAULT_CHAN_PSD_PLOT,
     DEFAULT_CHAN_MISC,

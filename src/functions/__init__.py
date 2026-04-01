@@ -1,5 +1,5 @@
 # Preprocessing
-from .load_mff import load_mff
+from .assign_channels import assign_channels
 from .filter_eeg import notch_filter, bandpass_filter
 from .resample_data import resample_data
 from .interpolate_bads import interpolate_bads
@@ -19,7 +19,7 @@ from .analyze_fft import analyze_fft
 
 __all__ = [
     # Preprocessing
-    "load_mff",
+    "assign_channels",
     "notch_filter",
     "bandpass_filter",
     "resample_data",

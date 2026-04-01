@@ -5,7 +5,7 @@ import mne
 import pandas as pd
 
 from src.functions import read_triggers, epoch_data, crop_raw_to_conditions
-from src.constants.config_eeg import DEFAULT_TRIGGERS
+from src.constants.loading_constants import DEFAULT_TRIGGERS
 from src.constants import DEFAULT_WINDOW_SIZE
 
 def EpochingEEG(key="epoch-eeg"):

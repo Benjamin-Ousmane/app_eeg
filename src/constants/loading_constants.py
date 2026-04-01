@@ -14,6 +14,8 @@ MAPPING_TYPE_TAI = {
   'DI65': 'misc', 'DI67': 'misc', 'DI69': 'misc', 'DI66': 'misc', 'DI68': 'misc',
   'DI70': 'misc', 'STI 014': 'stim', 'ECG': 'ecg', 'EMG': 'emg'}
 
+AVAILABLE_MAPPING_TYPES = ["misc", "stim", "ecg", "emg", "eog", "eeg"]
+
 
 DEFAULT_TRIGGERS = ['DI65', 'DI66', 'DI67', 'DI68', 'DI69', 'DI70', 'STI 014']
 

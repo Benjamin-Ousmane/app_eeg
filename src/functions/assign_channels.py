@@ -1,28 +1,20 @@
 
 import os
 import mne
-from src.constants import config_eeg as cfg
-
-def load_mff(raw_fname, subject_name, verbose=True):
+def assign_channels(data, raw_fname, subject_name, mapping_dict, montage_ch_names, verbose=True):
     """
-    Load EGI .mff data, set channel types and montage.
+    Set channel types and montage on an already loaded EGI raw object.
     """
-    # Load data
-    try:
-        data = mne.io.read_raw_egi(raw_fname, eog=None, misc=None, exclude=None, include=None, preload=True, verbose=None)
-    except Exception as e:
-        print(f"Failed to load {raw_fname}: {e}")
-        raise e
-
     if verbose : 
-        print(f"Loading {raw_fname}")
+        print(f"Assigning channels for {raw_fname}")
         print(f'Event ID : {data.event_id}')
         print(f'Chan in the file : {data.ch_names}')
 
     # Mapping
-    mapping_raw = cfg.MAPPING_TYPE
+    mapping_raw = mapping_dict
 
-    print('mapping_raw: ', mapping_raw)
+    if verbose:
+        print('mapping_raw: ', mapping_raw)
 
     # Filter mapping for present channels
     present_chans = set(data.ch_names)
@@ -46,7 +38,7 @@ def load_mff(raw_fname, subject_name, verbose=True):
         try:
             montage = mne.channels.read_dig_egi(coordinates_file)
             # Force assigning configuration names because montage format does not always match raw names
-            montage.ch_names = cfg.EEG_CHAN_NAMES
+            montage.ch_names = montage_ch_names
             data.set_montage(montage, match_case=False, on_missing='warn')
             data.info['subject_info'] = {'his_id' : subject_name}
             
