@@ -18,8 +18,8 @@ st.info("Select a page from the sidebar to access a module.")
 
 st.markdown("""
 - **1.Preprocessing**: 
-    Preprocess EEG signals from EGI .mff folders.
-- **2.Analysis - FFT**: 
-    Calculate the FFT of EEG signals from EGI .mff folders.
+    Loading, Preprocessing & ICA.
+- **2.Analysis**: 
+    Epoching, FFT analysis.
 """)
 
