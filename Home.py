@@ -20,6 +20,6 @@ st.markdown("""
 - **1.Preprocessing**: 
     Loading, Preprocessing & ICA.
 - **2.Analysis**: 
-    Epoching, FFT analysis.
+    Epoching, FFT analysis, Connectivity analysis.
 """)
 

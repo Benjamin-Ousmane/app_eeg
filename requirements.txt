@@ -2,6 +2,7 @@ streamlit
 openpyxl
 matplotlib
 mne
+mne-connectivity
 defusedxml
 scikit-learn
 pyinstaller

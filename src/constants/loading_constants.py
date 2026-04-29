@@ -22,6 +22,7 @@ DEFAULT_TRIGGERS = ['DI65', 'DI66', 'DI67', 'DI68', 'DI69', 'DI70', 'STI 014']
 # Preprocessing defaults
 DEFAULT_CHAN_PSD_PLOT = ['E15','E11', 'E55', 'E62','E75', 'E108', 'E45', 'E122', 'E33']
 DEFAULT_CHAN_MISC = ['E125','E126','E127','E128', 'E119', 'E48', 'EMG']
+CHIN_STRAPS = ['E120', 'E119', 'E121', 'E114', 'E115', 'E108', 'E101', 'E100', 'E107', 'E113', 'E43', 'E48', 'E38', 'E44', 'E39', 'E45', 'E50', 'E57', 'E56', 'E49', 'E25', 'E21', 'E14', 'E8', 'E1', 'E32']
 DEFAULT_BADS = ['VREF']
 SFREQ = 200
 

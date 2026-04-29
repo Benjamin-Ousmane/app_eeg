@@ -3,6 +3,7 @@ from .loading_constants import *
 from .fft_constants import *
 from .epoching_constants import *
 from .ica_constants import *
+from .connectivity_constants import *
 
 __all__ = [
     "EEG_CODES",
@@ -10,5 +11,6 @@ __all__ = [
     "loading_constants",
     "fft_constants",
     "epoching_constants",
-    "ica_constants"
+    "ica_constants",
+    "connectivity_constants"
 ]

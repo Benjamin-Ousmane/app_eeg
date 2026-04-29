@@ -21,6 +21,7 @@ from src.constants.loading_constants import (
     DEFAULT_TRIGGERS,
     DEFAULT_CHAN_PSD_PLOT,
     DEFAULT_CHAN_MISC,
+    CHIN_STRAPS,
     DEFAULT_BADS,
     SFREQ
 )
@@ -101,18 +102,31 @@ def PreprocessEEG(key="preprocess-eeg"):
         )
     with col_e0:
         with st.expander("Channels to Exclude", expanded=do_exclude_misc):
+            col_cb1, col_cb2 = st.columns(2)
+            with col_cb1:
+                use_default_misc = st.checkbox("Default misc channels", value=True, help="E.g., E125, E128, EMG")
+            with col_cb2:
+                use_chin_straps = st.checkbox("Chin Straps channels", value=False, help="Outer layer and cheek channels")
+
             if raw:
                 available_chans = raw.ch_names
-                default_misc = [ch for ch in DEFAULT_CHAN_MISC if ch in available_chans]
             else:
-                available_chans = DEFAULT_CHAN_MISC
-                default_misc = DEFAULT_CHAN_MISC
+                available_chans = DEFAULT_CHAN_MISC + CHIN_STRAPS
+                
+            default_misc = []
+            if use_default_misc:
+                default_misc.extend([ch for ch in DEFAULT_CHAN_MISC if ch in available_chans])
+            if use_chin_straps:
+                default_misc.extend([ch for ch in CHIN_STRAPS if ch in available_chans])
+                
+            # Remove duplicates while preserving order
+            default_misc = list(dict.fromkeys(default_misc))
                 
             param_misc_channels = st.multiselect(
                 "Channels to set as 'misc'",
                 options=available_chans,
                 default=default_misc,
-                key=f"{key}-misc-ch"
+                key=f"{key}-misc-ch-{use_default_misc}-{use_chin_straps}"
             )
 
     # 1. Trimming

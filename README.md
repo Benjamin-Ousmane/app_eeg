@@ -33,16 +33,20 @@ python -m PyInstaller --clean --noconfirm --onefile --name app_eeg `
 --copy-metadata streamlit `
 --copy-metadata pandas --copy-metadata pyarrow `
 --copy-metadata openpyxl --copy-metadata mne `
+--copy-metadata mne-connectivity `
 --collect-submodules streamlit `
 --collect-submodules pandas --collect-submodules pyarrow `
 --collect-submodules openpyxl --collect-submodules mne `
+--collect-submodules mne_connectivity `
 --collect-data streamlit `
 --collect-data pandas --collect-data pyarrow `
 --collect-data openpyxl --collect-data mne `
+--collect-data mne_connectivity `
 --hidden-import pandas `
 --hidden-import pyarrow `
 --hidden-import openpyxl --hidden-import openpyxl.cell `
 --hidden-import mne `
+--hidden-import mne_connectivity `
 --hidden-import matplotlib.backends.backend_tkagg `
 --hidden-import matplotlib.backends.backend_qt5agg `
 --hidden-import tkinter `

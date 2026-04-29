@@ -5,6 +5,8 @@ from .IndependentComponentAnalysisEEG import IndependentComponentAnalysisEEG
 from .EpochingEEG import EpochingEEG
 from .AnalysisFFT import AnalysisFFT
 from .PlotFFT import PlotFFT
+from .AnalysisConnectivity import AnalysisConnectivity
+from .PlotConnectivity import PlotConnectivity
 
 __all__ = [
     "Sidebar",
@@ -14,4 +16,6 @@ __all__ = [
     "EpochingEEG",
     "AnalysisFFT",
     "PlotFFT",
+    "AnalysisConnectivity",
+    "PlotConnectivity"
 ]

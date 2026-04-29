@@ -4,22 +4,25 @@ from PyInstaller.utils.hooks import collect_submodules
 from PyInstaller.utils.hooks import copy_metadata
 
 datas = [('Home.py', '.'), ('pages', 'pages'), ('src', 'src')]
-hiddenimports = ['pandas', 'pyarrow', 'openpyxl', 'openpyxl.cell', 'mne', 'matplotlib.backends.backend_tkagg', 'matplotlib.backends.backend_qt5agg', 'tkinter']
+hiddenimports = ['pandas', 'pyarrow', 'openpyxl', 'openpyxl.cell', 'mne', 'mne_connectivity', 'matplotlib.backends.backend_tkagg', 'matplotlib.backends.backend_qt5agg', 'tkinter']
 datas += collect_data_files('streamlit')
 datas += collect_data_files('pandas')
 datas += collect_data_files('pyarrow')
 datas += collect_data_files('openpyxl')
 datas += collect_data_files('mne')
+datas += collect_data_files('mne_connectivity')
 datas += copy_metadata('streamlit')
 datas += copy_metadata('pandas')
 datas += copy_metadata('pyarrow')
 datas += copy_metadata('openpyxl')
 datas += copy_metadata('mne')
+datas += copy_metadata('mne-connectivity')
 hiddenimports += collect_submodules('streamlit')
 hiddenimports += collect_submodules('pandas')
 hiddenimports += collect_submodules('pyarrow')
 hiddenimports += collect_submodules('openpyxl')
 hiddenimports += collect_submodules('mne')
+hiddenimports += collect_submodules('mne_connectivity')
 
 
 a = Analysis(

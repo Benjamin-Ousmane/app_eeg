@@ -16,6 +16,7 @@ from .st_display_logs import st_display_logs
 from .epoch_data import epoch_data
 from .crop_raw_to_conditions import crop_raw_to_conditions
 from .analyze_fft import analyze_fft
+from .analyze_connectivity import analyze_connectivity
 
 __all__ = [
     # Preprocessing
@@ -36,5 +37,6 @@ __all__ = [
     # Analysis
     "epoch_data",
     "crop_raw_to_conditions",
-    "analyze_fft"
+    "analyze_fft",
+    "analyze_connectivity"
 ]
