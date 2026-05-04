@@ -15,15 +15,3 @@ def notch_filter(data, notch_freqs=None, verbose=True):
     filtered_data.notch_filter(notch_freqs, picks=picks_eeg, filter_length='auto', phase='zero-double', verbose=verbose)
 
     return filtered_data
-
-def bandpass_filter(data, highpass=0.5, highcut=45, verbose=True):
-    """
-    Apply Bandpass filter.
-    """
-    filtered_data = data.copy()
-
-    if verbose:
-        print(f"Applying Bandpass filter: {highpass}-{highcut} Hz")
-    filtered_data.filter(highpass, highcut, method='fir', phase='zero-double', fir_design='firwin2', verbose=verbose)
-
-    return filtered_data

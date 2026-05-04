@@ -1,6 +1,7 @@
 # Preprocessing
 from .assign_channels import assign_channels
-from .filter_eeg import notch_filter, bandpass_filter
+from .notch_filter import notch_filter
+from .bandpass_filter import bandpass_filter
 from .resample_data import resample_data
 from .interpolate_bads import interpolate_bads
 from .set_average_reference import set_average_reference
