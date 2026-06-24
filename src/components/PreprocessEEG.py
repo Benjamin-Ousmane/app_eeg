@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import mne
 import numpy as np
 import pandas as pd
+import json
 
 from src.functions import (
     notch_filter, 
@@ -14,7 +15,6 @@ from src.functions import (
     set_average_reference,
     trim_eeg_data,
     read_triggers,
-    st_display_logs
 )
 
 from src.constants.loading_constants import (
@@ -332,24 +332,17 @@ def PreprocessEEG(key="preprocess-eeg"):
         subject_name = os.path.splitext(os.path.basename(input_path))[0].replace('_raw', '') 
 
         
-        # --- Initialize log_data and placeholder ---
-        log_placeholder = st.sidebar.empty()
         log_data = {
             'subject_name': subject_name,
-            'process_type': 'preprocess',
-            'config': {
-                'do_exclude_misc': do_exclude_misc,
-                'do_trim': do_trim,
-                'do_notch': do_notch,
-                'do_bandpass': do_bandpass,
-                'do_resample': do_resample,
-                'do_manual_bads': do_manual_bads,
-                'do_interpolate': do_interpolate,
-                'do_reference': do_reference
-            }
+            'Excluded Channels': False,
+            'Trim': False,
+            'Notch Filter (50Hz)': False,
+            'Bandpass Filter': False,
+            'Resample': False,
+            'Bad Channels': False,
+            'Interpolation': False,
+            'Average Reference': False,
         }
-        
-        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
 
         try:
             with st.spinner("Loading data into memory..."):
@@ -364,9 +357,8 @@ def PreprocessEEG(key="preprocess-eeg"):
                     misc_map = {ch: 'misc' for ch in param_misc_channels if ch in raw.ch_names}
                     if misc_map:
                         raw.set_channel_types(misc_map)
-                        log_data['do_exclude_misc'] = True
-                        log_data['param_misc_channels'] = param_misc_channels
-                        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                        log_data['Excluded Channels'] = param_misc_channels
+    
 
             # --- 1. Trimming ---
             if do_trim:
@@ -388,29 +380,31 @@ def PreprocessEEG(key="preprocess-eeg"):
                 
                 with st.spinner(f"Trimming data (keeping -{param_trim_dur_before}s before and +{param_trim_dur_after}s after)..."):
                     raw = trim_eeg_data(raw, start_time=start_time, end_time=end_time, verbose=True)
-                    log_data['do_trim'] = True
-                    log_data['param_trim_start'] = param_trim_start
-                    log_data['param_trim_end'] = param_trim_end
-                    log_data['param_trim_dur_before'] = param_trim_dur_before
-                    log_data['param_trim_dur_after'] = param_trim_dur_after
-                    st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                    log_data['Trim'] = {
+                        "start_trigger": param_trim_start,
+                        "dur_before_start_trigger": param_trim_dur_before,
+                        "end_trigger": param_trim_end,
+                        "dur_after_end_trigger": param_trim_dur_after
+                    }
+
 
 
             # --- 2. Notch Filter ---
             if do_notch:
                 with st.spinner("Applying Notch Filter (50, 100, 150 Hz)..."):
                     raw = notch_filter(raw, verbose=True)
-                    log_data['do_notch'] = True
-                    st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                    log_data['Notch Filter (50Hz)'] = True
+
 
             # --- 3. Bandpass Filter ---
             if do_bandpass:
                 with st.spinner(f"Applying Bandpass Filter ({param_highpass}-{param_lowpass} Hz)..."):
                     raw = bandpass_filter(raw, highpass=param_highpass, highcut=param_lowpass, verbose=True)
-                    log_data['do_bandpass'] = True
-                    log_data['param_highpass'] = param_highpass
-                    log_data['param_lowpass'] = param_lowpass
-                    st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                    log_data['Bandpass Filter'] = {
+                        "Highpass (Hz)": param_highpass,
+                        "Lowpass (Hz)": param_lowpass
+                    }
+
 
             # --- 3.5 Plot PSD ---
             if do_plot_psd:
@@ -425,8 +419,8 @@ def PreprocessEEG(key="preprocess-eeg"):
                         raw.plot_psd(area_mode='range', tmax=10.0, average=False) 
                     
                     plt.show(block=True)
-                    log_data['do_plot_psd'] = True
-                    st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+
+
                 except Exception as e:
                     st.warning(f"PSD Plot error: {e}")
                 finally:
@@ -438,9 +432,8 @@ def PreprocessEEG(key="preprocess-eeg"):
             if do_resample:
                 with st.spinner(f"Resampling to {param_sfreq}Hz..."):
                     raw = resample_data(raw, sfreq=param_sfreq)
-                    log_data['do_resample'] = True
-                    log_data['param_sfreq'] = param_sfreq
-                    st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                    log_data['Resample'] = f"{param_sfreq} Hz"
+
 
             
 
@@ -463,9 +456,8 @@ def PreprocessEEG(key="preprocess-eeg"):
                     raw.plot_sensors(kind='3d', ch_type='eeg', title='Sensory positions, Red ones are indicated as bads', show=False)
                     plt.show(block=True)
                     
-                    log_data['do_manual_bads'] = True
-                    log_data['marked_bads'] = raw.info['bads']
-                    st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                    log_data['Bad Channels'] = raw.info['bads'] if raw.info['bads'] else 'None'
+
                 except Exception as e:
                      st.warning(f"Manual Inspection error: {e}")
                 finally:
@@ -477,15 +469,15 @@ def PreprocessEEG(key="preprocess-eeg"):
                 if len(raw.info['bads']) > 0:
                     with st.spinner("Interpolating bad channels..."):
                         raw = interpolate_bads(raw)
-                        log_data['do_interpolate'] = True
-                        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                        log_data['Interpolation'] = True
+    
 
             # --- 7. Re-referencing ---
             if do_reference:
                 with st.spinner("Re-referencing to Average..."):
                     raw = set_average_reference(raw)
-                    log_data['do_reference'] = True
-                    st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                    log_data['Average Reference'] = True
+
 
 
             # --- 8. Save ---
@@ -495,10 +487,12 @@ def PreprocessEEG(key="preprocess-eeg"):
             with st.spinner(f"Saving to {save_path}..."):
                 raw.save(save_path, overwrite=True)
             
+                # Save log as JSON
+                log_path = os.path.join(output_dir, f"{subject_name}_preprocessed_logs.json")
+                with open(log_path, 'w') as f:
+                    json.dump(log_data, f, indent=4)
+
             st.success(f"✅ Processing Complete. Saved to `{save_path}`")
-            
-            # Finalize log
-            st_display_logs(log_data, log_placeholder, key=f"{key}-logs", is_final=True)
             
             # --- Final Inspection ---
             try:

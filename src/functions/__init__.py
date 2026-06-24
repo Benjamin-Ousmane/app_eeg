@@ -11,7 +11,7 @@ from .find_blinks import find_blinks
 from .epoch_data import epoch_data
 from .trim_data import trim_eeg_data
 from .read_triggers import read_triggers
-from .st_display_logs import st_display_logs
+
 
 # Analysis
 from .epoch_data import epoch_data
@@ -33,7 +33,6 @@ __all__ = [
     "epoch_data",
     "trim_eeg_data",
     "read_triggers",
-    "st_display_logs",
 
     # Analysis
     "epoch_data",

@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 import mne
 import numpy as np
 import pandas as pd
+import json
 
 from src.functions import (
     fit_ica,
     find_blinks,
-    st_display_logs
 )
 
 from src.constants import ICA_RANDOM_STATE
@@ -123,19 +123,12 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
 
         subject_name = os.path.splitext(os.path.basename(input_path))[0].replace('preprocessed', '') 
         
-        # --- Initialize log_data and placeholder ---
-        log_placeholder = st.sidebar.empty()
         log_data = {
             'subject_name': subject_name,
-            'process_type': 'ica',
-            'config': {
-                'do_find_blinks': do_find_blinks,
-                'do_find_eog': do_find_eog,
-                'do_apply_ica': do_apply_ica
-            }
+            'Blinks Detected': False,
+            'EOG Proxy': False,
+            'ICA': False,
         }
-        
-        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
         
         orig_backend = plt.get_backend()
 
@@ -149,9 +142,8 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
                     ch = param_eog_ch if do_find_eog else "E25" # Fallback if EOG is unchecked
                     try:
                         eog_events = find_blinks(raw, ch)
-                        log_data['do_find_blinks'] = True
-                        log_data['blinks_count'] = len(eog_events)
-                        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                        log_data['Blinks Detected'] = int(len(eog_events))
+
                     except Exception as e:
                         st.warning(f"Could not find blinks on {ch}: {e}")
 
@@ -164,10 +156,8 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
                     try:
                         eog_inds, scores = ica.find_bads_eog(raw, ch_name=param_eog_ch, threshold=3.0)
                         ica.exclude = eog_inds
-                        log_data['do_find_eog'] = True
-                        log_data['param_eog_ch'] = param_eog_ch
-                        log_data['eog_excludes'] = eog_inds
-                        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                        log_data['EOG Proxy'] = param_eog_ch
+
                     except Exception as e:
                         st.warning(f"Could not find bad EOG components: {e}")
 
@@ -204,11 +194,12 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
 
                     with st.spinner("Applying ICA to data..."):
                         ica.apply(raw)
-                        log_data['do_apply_ica'] = True
-                        log_data['param_n_components'] = param_n_components
-                        log_data['param_method'] = param_method
-                        log_data['ica_excludes'] = ica.exclude
-                        st_display_logs(log_data, log_placeholder, key=f"{key}-logs")
+                        log_data['ICA'] = {
+                            "components": param_n_components,
+                            "method": param_method,
+                            "Removed Components": ica.exclude
+                        }
+
 
             # --- Save ---
             if do_apply_ica:
@@ -218,11 +209,14 @@ def IndependentComponentAnalysisEEG(key="ica-eeg"):
                 
                 with st.spinner(f"Saving to {save_path}..."):
                     raw.save(save_path, overwrite=True)
+                    
+                    # Save log as JSON
+                    log_path = os.path.join(output_dir, f"{input_basename}_ica_logs.json")
+                    with open(log_path, 'w') as f:
+                        json.dump(log_data, f, indent=4)
                 
                 st.success(f"✅ ICA Complete. Saved to `{save_path}`")
                 
-                # Finalize log
-                st_display_logs(log_data, log_placeholder, key=f"{key}-logs", is_final=True)
             else:
                 st.info("ICA was not applied. No new file saved.")
                 
