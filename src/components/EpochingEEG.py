@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import json
 import matplotlib.pyplot as plt
 import mne
 import pandas as pd
@@ -150,12 +151,31 @@ def EpochingEEG(key="epoch-eeg"):
             return
 
         subject_name = os.path.splitext(os.path.basename(input_path))[0]
-        
+
+        log_data = {
+            'subject_name': subject_name,
+            'Removed Triggers': False,
+            'Condition Duration (s)': param_condition_duration if do_select_triggers else False,
+            'Epoching Parameters': {
+                "window size (s)": param_window_size,
+                "apply baseline": do_baseline,
+                "apply detrend": do_detrend,
+            },
+            'Epochs Removed': False,
+        }
+
         orig_backend = plt.get_backend()
 
         try:
             if do_select_triggers:
                 with st.spinner("Cropping raw data to selected conditions..."):
+                    removed_events_df = edited_trigger_df[edited_trigger_df["Keep"] == False]
+                    if not removed_events_df.empty:
+                        log_data['Removed Triggers'] = [
+                            {"index": int(row['idx']), "code": row['code'], "time": float(row['time'])}
+                            for _, row in removed_events_df.iterrows()
+                        ]
+
                     keep_events_df = edited_trigger_df[edited_trigger_df["Keep"] == True]
                     if keep_events_df.empty:
                         st.error("No triggers marked as 'Keep'.")
@@ -190,6 +210,7 @@ def EpochingEEG(key="epoch-eeg"):
             
             # Interactive visualization
             if do_manual_inspection:
+                selection_before = set(int(s) for s in epochs.selection)
                 try:
                     try: plt.switch_backend('Qt5Agg')
                     except: plt.switch_backend('TkAgg')
@@ -208,6 +229,11 @@ def EpochingEEG(key="epoch-eeg"):
                 finally:
                     try: plt.switch_backend(orig_backend)
                     except: pass
+                
+                selection_after = set(int(s) for s in epochs.selection)
+                dropped_epochs = sorted(selection_before - selection_after)
+                if dropped_epochs:
+                    log_data['Epochs Removed'] = dropped_epochs
 
             # Save
             filename = f"{subject_name}_epo.fif"
@@ -215,6 +241,9 @@ def EpochingEEG(key="epoch-eeg"):
             
             with st.spinner(f"Saving to {save_path}..."):
                 epochs.save(save_path, overwrite=True)
+                log_path = os.path.join(output_dir, f"{subject_name}_epo_logs.json")
+                with open(log_path, 'w') as f:
+                    json.dump(log_data, f, indent=4)
             
             st.success(f"✅ Epoching Complete. Saved to `{save_path}`")
 
